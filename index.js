@@ -1,16 +1,11 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const { apiRouter } = require('./routes');
 const app = express();
-const port = 5000;
-const cors = require("cors");
+const port = 3000;
 
-
-async function main(){
-    await mongoose.connect("mongodb://localhost:27017")
-}
-main().then(console.log("server connected")).catch(err => console.log(err))
-
+app.use('/api', apiRouter)
 
 app.listen(port, () => {
-    console.log(`server running port: ${port}`)
+    console.log(`server running port: ${port}`);
 })
+
