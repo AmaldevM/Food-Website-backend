@@ -4,5 +4,5 @@ const apiRouter = express.Router()
 
 apiRouter.use('/v1', v1Router)
 
-module.exports = {apiRouter}
+module.exports = { apiRouter }
 

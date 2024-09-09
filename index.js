@@ -2,6 +2,7 @@ const express = require('express');
 const { apiRouter } = require('./routes');
 const { connectDB } = require('./config/db')
 const app = express();
+app.use(express.json())
 const port = 3000;
 
 app.use('/api', apiRouter);
