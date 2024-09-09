@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     password: {  type:String, required: true, minLength: 8  },
     phone: { type: String, },
     address: { type: String, },
-    role: { type: String, },
+    role: { type: String, enum:["customer","admin","seller"]},
     profilePic: { type:String, default:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLMI5YxZE03Vnj-s-sth2_JxlPd30Zy7yEGg&s",}
 });
 const User = mongoose.model("user", userSchema);
