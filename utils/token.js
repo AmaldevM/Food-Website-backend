@@ -6,7 +6,7 @@ const generateToken = async (id,name,role) => {
       { 
       id: id, 
       name: name, 
-      role: role || ["learner"]
+      role: role 
       }, 
       process.env.TOKEN_SECRET_KEY);
     return token
