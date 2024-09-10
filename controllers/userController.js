@@ -31,7 +31,7 @@ const userSignup = async (req,res,next) => {
      }
 };
 
-
+//UserLogin
 const userLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body
@@ -59,7 +59,7 @@ const userLogin = async (req, res, next) => {
      res.status(error.statusCode || 500).json({message:error.messsage || "Internal login server Error"})
   }
 };
-
+//userLogout
 const userLogout = async (req, res) => {
   try {
     res.clearCookie("Token")
@@ -71,18 +71,38 @@ const userLogout = async (req, res) => {
  }
 }
 
-const userProfile = async (req, res, next) => {
+//checkUser
+const checkUser = async (req, res) => {
   try {
+    const { user }=req;
+    if(!user) {
+      res.status(401).json({succesd:false,message:"user not autherized"})
+    }
 
-    const { id } = req.user
-    const profile = await User.findById(id).exec()
-    res.status(200).json({success:true,message:"fetched user profile",data:profile})
-    
-  } catch (error) {
-    next(error)
-  }
+    res.json({success: true, messege: "user autherized",});
+
+  } catch (error){
+    console.log(error);
+    res.status(error.statusCode || 500).json({message:error.messsage || "Internal server Error"})
+ }
 }
 
+//UserProfile
+const userProfile = async (req, res, next) => {
+  try {
+    const user = req.user;
+    console.log(user,"======user");
+
+    const { id } = req.params;
+    const userData = await User.findOne({_id: id });
+
+    res.json({ success:true , message: "user data fetched", data:userData})
+  } catch (error){
+    console.log(error);
+    res.status(error.statusCode || 500).json({message:error.messsage || "Internal server Error"})
+ }
+}
+//UserUpdate
 const updateUser =async (req, res, next) => {
   try {
     const { userId } = req.params
@@ -160,4 +180,4 @@ const deleteUser = async (req, res, next) => {
 
 
 
-module.exports={ userSignup, userLogin, userLogout, userProfile, getAllUsers,deleteUser,updateUser }
+module.exports={ userSignup, userLogin, userLogout, userProfile, getAllUsers,deleteUser,updateUser, checkUser }

@@ -1,6 +1,6 @@
 const express = require("express")
-const { userSignup, userLogin, userLogout, userProfile, getAllUsers,deleteUser, updateUser }=require("../../controllers/userController")
-const { userAuth, adminAuth, userAndAdminAuth, specificUserAuth } = require("../../middlewares/authMiddlewares")
+const { userSignup, userLogin, userLogout, userProfile, getAllUsers,deleteUser, updateUser, checkUser }=require("../../controllers/userController")
+const { userAuth, adminAuth, userAndAdminAuth, specificUserAuth } = require("../../middlewares/userAuth")
 const {upload}=require("../../middlewares/multer")
 
 
@@ -12,15 +12,17 @@ router.post( "/signup", userSignup )
 router.post( "/login", userLogin )
 //user logout
 router.post( "/logout", userLogout )
+
 //user profile
-router.get("/profile",userAuth, userProfile)
+router.get("/profile/:id", userAuth, userProfile)
 //user update
-router.put("/update/:userId",userAuth,specificUserAuth,upload.single("profile_img"),updateUser)
+router.put("/update/:userId",userAuth, updateUser)
 //user delete
-router.delete("/delete/:userId",userAuth,userAndAdminAuth,deleteUser)
+router.delete("/delete/:userId",userAuth,deleteUser)
+
 //user list
-router.get("/userlist", userAuth, adminAuth, getAllUsers)
+router.get("/userlist", userAuth, )
 //check user
-router.get("/checkUser",)
+router.get("/checkUser", userAuth, checkUser )
 
 module.exports={ userRouter:router }
