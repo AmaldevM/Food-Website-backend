@@ -1,9 +1,9 @@
-const { User } = require("../models/userModel");
+const { Admin } = require("../models/adminModel");
 const bcrypt = require("bcrypt");
-const { generateToken } = require("../utils/token")
+const { generateToken } = require("../utils/token");
 
-//UserSignup
-const userSignup = async (req,res,next) => {
+//AdminSignup
+const adminSignup = async (req,res,next) => {
      try {
         const { name, email, password, phone, address, role, profilePic} = req.body;
         if(!name || !email || !password ) {
@@ -11,19 +11,19 @@ const userSignup = async (req,res,next) => {
                 message: "all field required",
             });
         }
-        const isUserExist = await User.findOne({ email });
-        if (isUserExist) {
+        const isAdminExist = await Admin.findOne({ email });
+        if (isAdminExist) {
             return res.status(400).json({ message:  "user already exist" });
         }
             const saltRounds = 10;
             const hashedPassword = bcrypt.hashSync(password, saltRounds);
       
-            const newUser = new User({name, email, password:hashedPassword, phone, profilePic});
+            const newUser = new Admin({name, email, password:hashedPassword, phone, profilePic});
             await newUser.save();
 
-            const token = generateToken(newUser._id);
+            const token = generateToken(newUser._id,"admin");
             res.cookie("token",token);
-            res.json ({success:true, message: "Signup Successfully"});
+            res.json ({success:true, message: "admin Signup Successfully"});
 
 
      } catch (error){
@@ -31,28 +31,28 @@ const userSignup = async (req,res,next) => {
         res.status(error.statusCode || 500).json({message:error.messsage || "Internal server Error"})
      }
 };
-//UserLogin
-const userLogin = async (req, res, next) => {
+//AdminLogin
+const adminLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body
     if (!email || !password) {
       return res.status(400).json({success:false,message:"all fields are required"})
     }
-    const userExists =await User.findOne({ email:email })
-    if (!userExists) {
-      return res.status(404).json({success:false,message:"user does not exist"})
+    const adminExist =await Admin.findOne({ email:email })
+    if (!adminExist) {
+      return res.status(404).json({success:false,message:"admin does not exist"})
     }
     
     //compare passwords
-    const passwordsMatch=await bcrypt.compare(password, userExists.password)
+    const passwordsMatch=await bcrypt.compare(password, adminExist.password)
     if (!passwordsMatch) {
       return res.status(401).json({success:false,message:"unauthorized password"})
     }
 
     //generate jwt token and set cookies
-    const token = await generateToken(userExists._id, userExists.name, userExists.roles)
+    const token = await generateToken(adminExist._id ,'admin')
     res.cookie("Token", token)
-    res.status(200).json({success:true,message:"user logged in"})
+    res.status(200).json({success:true,message:"Admin login successfull"})
 
   } catch (error){
      console.log(error);
@@ -60,7 +60,7 @@ const userLogin = async (req, res, next) => {
   }
 };
 //userLogout
-const userLogout = async (req, res,next) => {
+const adminLogout = async (req, res,next) => {
   try {
     res.clearCookie("Token")
     res.status(200).json({success:true,message:"successfully logged out "})
@@ -71,26 +71,26 @@ const userLogout = async (req, res,next) => {
  }
 }
 //UserProfile
-const userProfile = async (req, res, next) => {
+const adminProfile = async (req, res, next) => {
   try {
     const user = req.user;
     console.log(user,"======user");
 
     const { id } = req.params;
-    const userData = await User.findOne({_id: id });
+    const userData = await Admin.findOne({_id: id });
 
-    res.json({ success:true , message: "user data fetched", data:userData})
+    res.json({ success:true , message: "admin data fetched", data:userData})
   } catch (error){
     console.log(error);
     res.status(error.statusCode || 500).json({message:error.messsage || "Internal server Error"})
  }
 }
 //checkUser
-const checkUser = async (req, res,next) => {
+const checkadmin = async (req, res,next) => {
   try {
     const { user }=req;
     if(!user) {
-      res.status(401).json({succesd:false,message:"user not autherized"})
+      res.status(401).json({succesd:false,message:"admin not autherized"})
     }
 
     res.json({success: true, messege: "user autherized",});
@@ -101,13 +101,13 @@ const checkUser = async (req, res,next) => {
  }
 }
 //UserUpdate
-const updateUser =async (req, res, next) => {
+const updateadmin =async (req, res, next) => {
   try {
     const { userId } = req.params
     const {path} = req.file
     let { name, email } = req.body
     
-    const user = await User.findById(userId).exec()
+    const user = await Admin.findById(userId).exec()
 
     let imgUrl = await handleImageUpload(path)
 
@@ -124,7 +124,7 @@ const updateUser =async (req, res, next) => {
       email = user.email;
     }
 
-    const updatedUser=await User.findByIdAndUpdate(userId,{name:name,email:email,profile_img:imgUrl},{new:true})   
+    const updatedUser=await Admin.findByIdAndUpdate(userId,{name:name,email:email,profile_img:imgUrl},{new:true})   
     res.status(200).json({success:true,message:"user updated"})
 
   } catch (error){
@@ -132,21 +132,7 @@ const updateUser =async (req, res, next) => {
     res.status(error.statusCode || 500).json({message:error.messsage || "Internal server Error"})
  }
 }
-//UserList
-const getAllUsers = async (req, res, next) => {
-  try {
-    
-    const allUsers = await User.find({}).exec()
-    const data = allUsers.map((user) => {
-      return {name:user.name,email:user.email,id:user._id,roles:user.roles}
-    })
-    res.status(200).json({ success: true, message: "fetched all usets", data:data })
-    
-  } catch (error){
-    console.log(error);
-    res.status(error.statusCode || 500).json({message:error.messsage || "Internal server Error"})
- }
-}
+
 //Userdelete
 const deleteUser = async (req, res, next) => {
   try {
@@ -177,4 +163,4 @@ const deleteUser = async (req, res, next) => {
 }
 
 
-module.exports={ userSignup, userLogin, userLogout, userProfile, getAllUsers,deleteUser,updateUser, checkUser }
+module.exports={ adminSignup, adminLogin, adminLogout, adminProfile, deleteUser,updateadmin, checkadmin }

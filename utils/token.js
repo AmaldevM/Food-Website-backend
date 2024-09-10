@@ -7,7 +7,7 @@ const generateToken = async (id,name,role) => {
       { 
       id: id, 
       name: name, 
-      role: role 
+      role: role || "user"
       }, 
       process.env.TOKEN_SECRET_KEY);
     return token
@@ -18,4 +18,4 @@ const generateToken = async (id,name,role) => {
   }
 };
 
-module.exports={ generateToken }
+module.exports={ generateToken };
