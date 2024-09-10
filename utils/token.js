@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv")
 
 const generateToken = async (id,name,role) => {
   try {
