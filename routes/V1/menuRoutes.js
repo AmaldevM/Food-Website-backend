@@ -7,7 +7,7 @@ const {
   deleteMenuItem,
 } = require("../../controllers/menuController");
 const { upload } = require("../../middlewares/multer");
-const { sellerAuthentication } = require("../../middlewares/sellerAuth");
+const { sellerAuth } = require("../../middlewares/sellerAuth");
 const router = express.Router();
 
 // Get all menu items for a restaurant
@@ -15,10 +15,10 @@ router.get("/allmenus", getMenuItems);
 // Get menu by id
 router.get("/item/:id", getMenuItemById);
 // Create menu item
-router.post("/allmenus", sellerAuthentication, upload.single("image"), createMenuItem);
+router.post("/allmenus", sellerAuth, upload.single("image"), createMenuItem);
 // Update menus
-router.put("/item/:id", sellerAuthentication, updateMenu);
+router.put("/item/:id", sellerAuth, updateMenu);
 // Update menus
-router.delete("/item/:id", sellerAuthentication, deleteMenuItem);
+router.delete("/item/:id", sellerAuth, deleteMenuItem);
 
-module.exports = { menusRouter: router };
+module.exports = { menuRouter: router };
