@@ -1,24 +1,40 @@
-const express = require("express")
-const { adminSignup, adminLogin, adminLogout } = require("../../controllers/adminController")
-const router = express.Router()
+const express = require("express");
+const { 
+  adminSignup, 
+  adminLogin, 
+  adminLogout, 
+  adminProfile, 
+  updateAdmin, 
+  deleteUser, 
+  getUserList, 
+  checkUser 
+} = require("../../controllers/adminController");
+const { adminAuth } = require("../../middlewares/adminAuth");
 
-//user signup
-router.post( "/signup", adminSignup)
-//user login
-router.post( "/login", adminLogin)
-//user logout
-router.post( "/logout", adminLogout )
+const router = express.Router();
 
-//user profile
-router.get("/profile/:id")
-//user update
-router.put("/update/:userId")
-//user delete
-router.delete("/delete/:userId")
+// Admin signup
+router.post("/signup", adminSignup);
 
-//user list
-router.get("/userlist")
-//check user
-router.get("/checkUser" )
+// Admin login
+router.post("/login", adminLogin);
 
-module.exports={ adminRouter : router }
+// Admin logout
+router.post("/logout", adminLogout);
+
+// Admin profile (protected route)
+router.get("/profile/:id", adminAuth, adminProfile);
+
+// Update admin (protected route)
+router.put("/update/:userId", adminAuth, updateAdmin);
+
+// Delete user (protected route)
+router.delete("/delete/:userId", adminAuth, deleteUser);
+
+// Get user list (protected route)
+router.get("/userlist", adminAuth, getUserList);
+
+// Check user (protected route)
+router.get("/checkUser", adminAuth, checkUser);
+
+module.exports = { adminRouter: router };

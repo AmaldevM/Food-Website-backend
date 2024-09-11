@@ -3,41 +3,35 @@ const { User } = require("../models/userModel");
 
 const userAuth = async (req, res, next) => {
   try {
-    // destructure token from cookies
-    const { Token } = req.cookies
-    if (!Token) {
-      return res.status(401).json({success:false,message:"unauthorized access"})
+    // Destructure token from cookies
+    const { token } = req.cookies;  // Ensure the key matches the cookie name
+    if (!token) {
+      return res.status(401).json({ success: false, message: "Unauthorized access" });
     }
-    // verify token using jwt verify
-    const decoded = jwt.verify(Token, process.env.TOKEN_SECRET_KEY);
 
+    // Verify token using jwt verify
+    const decoded = jwt.verify(token, process.env.USER_JWT_SECRET_KEY);
+    
     if (!decoded) {
-      return res.status(401).json({success:false,message:"unauthorized access"})
+      return res.status(401).json({ success: false, message: "Unauthorized access" });
     }
 
-      // verify token using jwt verify
-      const verifiedToken = jwt.verify(token, process.env.USER_JWT_SECRET_KEY);
-      
-     // Fetch user from the database using the id from the token
-     const user = await User.findOne({ email: verifiedToken.email })
-     .select("-password")
-     .populate("address");
+    // Fetch user from the database using the email from the token
+    const user = await User.findOne({ email: decoded.email })
+      .select("-password")
+      .populate("address");
 
-   if (!user) {
-     return res
-       .status(401)
-       .json({ success: false, message: "User not found" });
-   }
+    if (!user) {
+      return res.status(401).json({ success: false, message: "User not found" });
+    }
+
     // Attach user to the request object
-    req.user=decoded;
-    next()
-
-  } catch (error){
-    console.log(error);
-    res.status(error.statusCode || 500).json({message: error.messsage || "Internal server Error"})
- }
-  
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message || "Internal server error" });
+  }
 };
-
 
 module.exports = { userAuth };

@@ -24,7 +24,6 @@ const addItemToCart = async (req, res) => {
       const itemIndex = cart.items.findIndex(
         (item) => item.menuItem.toString() === menuItem
       );
-
       const menuItemDetails = await Menu.findById(menuItem);
       if (!menuItemDetails) {
         return res.status(404).json({

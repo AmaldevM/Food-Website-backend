@@ -1,10 +1,13 @@
 const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv")
+const dotenv = require("dotenv");
 
-const generateToken = async (id,name,role) => {
+dotenv.config(); 
+
+
+const generateToken = (id, name, role) => {
   try {
-    if (!email) {
-      return res.status(400).json({message:"Cannot generate token: invalid email"});
+    if (!id || !name || !role) {
+      throw new Error("Cannot generate token: invalid parameters");
     }
 
     const secretKey = role === 'user'
@@ -14,14 +17,14 @@ const generateToken = async (id,name,role) => {
         : process.env.ADMIN_JWT_SECRET_KEY;
 
     if (!secretKey) {
-        return res.status(400).json({message:"JWT secret key not found for the specified role"});
+      throw new Error("JWT secret key not found for the specified role");
     }
 
-    const token = jwt.sign({ email, role }, secretKey, { expiresIn: '1h' });
+    const token = jwt.sign({ id, name, role }, secretKey, { expiresIn: '1h' });
     return token;
   } catch (error) {
-    res.status(500).json({true:false , message:error.message});
+    throw new Error(error.message); // Propagate the error to be handled by the caller
   }
 };
 
-module.exports={ generateToken };
+module.exports = { generateToken };

@@ -2,61 +2,61 @@ const { Admin } = require("../models/adminModel");
 const bcrypt = require("bcrypt");
 const { generateToken } = require("../utils/token");
 
-//AdminSignup
-const adminSignup = async (req,res,next) => {
-     try {
-        const { name, email, password, phone, address, role, profilePic} = req.body;
-        if(!name || !email || !password ) {
-          return  res.status(400).json({ success:true,
-                message: "all field required",
-            });
-        }
-        const isAdminExist = await Admin.findOne({ email });
-        if (isAdminExist) {
-            return res.status(400).json({ message:  "user already exist" });
-        }
-            const saltRounds = 10;
-            const hashedPassword = bcrypt.hashSync(password, saltRounds);
-      
-            const newUser = new Admin({name, email, password:hashedPassword, phone, profilePic});
-            await newUser.save();
+// AdminSignup
+const adminSignup = async (req, res, next) => {
+  try {
+    const { name, email, password, phone, address, role, profilePic } = req.body;
 
-            const token = generateToken(newUser._id,"admin");
-            res.cookie("token",token);
-            res.json ({success:true, message: "admin Signup Successfully"});
+    if (!name || !email || !password) {
+      return res.status(400).json({ success: false, message: "All fields are required" });
+    }
 
+    const isAdminExist = await Admin.findOne({ email });
+    if (isAdminExist) {
+      return res.status(400).json({ success: false, message: "Admin already exists" });
+    }
 
-     } catch (error){
-        console.log(error);
-        res.status(error.statusCode || 500).json({message:error.messsage || "Internal server Error"})
-     }
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const newUser = new Admin({ name, email, password: hashedPassword, phone, profilePic, role });
+    await newUser.save();
+
+    const token = generateToken(newUser._id, "admin");
+    res.cookie("token", token, { httpOnly: true, sameSite: "strict" });
+
+    res.json({ success: true, message: "Admin signed up successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(error.statusCode || 500).json({ message: "Internal server error" });
+  }
 };
-//AdminLogin
+// AdminLogin
 const adminLogin = async (req, res, next) => {
   try {
-    const { email, password } = req.body
+    const { email, password } = req.body;
+
     if (!email || !password) {
-      return res.status(400).json({success:false,message:"all fields are required"})
+      return res.status(400).json({ success: false, message: "All fields are required" });
     }
-    const adminExist =await Admin.findOne({ email:email })
+
+    const adminExist = await Admin.findOne({ email });
     if (!adminExist) {
-      return res.status(404).json({success:false,message:"admin does not exist"})
+      return res.status(404).json({ success: false, message: "Admin does not exist" });
     }
-    
-    //compare passwords
-    const passwordsMatch=await bcrypt.compare(password, adminExist.password)
+
+    const passwordsMatch = await bcrypt.compare(password, adminExist.password);
     if (!passwordsMatch) {
-      return res.status(401).json({success:false,message:"unauthorized password"})
+      return res.status(401).json({ success: false, message: "Unauthorized password" });
     }
 
-    //generate jwt token and set cookies
-    const token = await generateToken(adminExist._id ,'admin')
-    res.cookie("Token", token)
-    res.status(200).json({success:true,message:"Admin login successfull"})
+    const token = generateToken(adminExist._id, "admin");
+    res.cookie("token", token, { httpOnly: true, sameSite: "strict" });
 
-  } catch (error){
-     console.log(error);
-     res.status(error.statusCode || 500).json({message:error.messsage || "Internal login server Error"})
+    res.status(200).json({ success: true, message: "Admin login successful" });
+  } catch (error) {
+    console.error(error);
+    res.status(error.statusCode || 500).json({ message: "Internal server error" });
   }
 };
 //adminLogout
@@ -70,7 +70,7 @@ const adminLogout = async (req, res,next) => {
     res.status(error.statusCode || 500).json({message:error.messsage || "Internal server Error"})
  }
 }
-//UserProfile
+//adminProfile
 const adminProfile = async (req, res, next) => {
   try {
     const user = req.user;
@@ -100,39 +100,29 @@ const checkadmin = async (req, res,next) => {
     res.status(error.statusCode || 500).json({message:error.messsage || "Internal server Error"})
  }
 }
-//UserUpdate
-const updateadmin =async (req, res, next) => {
+//adminUpdate
+const updateAdmin = async (req, res) => {
   try {
-    const { userId } = req.params
-    const {path} = req.file
-    let { name, email } = req.body
-    
-    const user = await Admin.findById(userId).exec()
+    const { userId } = req.params;
+    const { name, email, profilePic } = req.body;
 
-    let imgUrl = await handleImageUpload(path)
-
-    if (!name) {
-      name=user.name
-    }
-    
-    if (email && email !== user.email) {
-      const emailInUse = await User.findOne({ email }).exec();
-      if (emailInUse) {
-        return res.status(401).json({ success: false, message: "Email already in use" });
-      }
-    } else {
-      email = user.email;
+    // Ensure admin exists
+    const admin = await Admin.findById(userId);
+    if (!admin) {
+      return res.status(404).json({ success: false, message: "Admin not found" });
     }
 
-    const updatedUser=await Admin.findByIdAndUpdate(userId,{name:name,email:email,profile_img:imgUrl},{new:true})   
-    res.status(200).json({success:true,message:"user updated"})
+    // Update fields
+    if (name) admin.name = name;
+    if (email) admin.email = email;
+    if (profilePic) admin.profilePic = profilePic;
 
-  } catch (error){
-    console.log(error);
-    res.status(error.statusCode || 500).json({message:error.messsage || "Internal server Error"})
- }
-}
-
+    const updatedAdmin = await admin.save();
+    res.status(200).json({ success: true, message: "Admin updated successfully", data: updatedAdmin });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message || "Internal server error" });
+  }
+};
 //Userdelete
 const deleteUser = async (req, res, next) => {
   try {
@@ -161,6 +151,36 @@ const deleteUser = async (req, res, next) => {
     res.status(error.statusCode || 500).json({message:error.messsage || "Internal server Error"})
  }
 }
+//getUserList
+const getUserList = async (req, res) => {
+  try {
+    const users = await Admin.find();
+    res.status(200).json({ success: true, data: users });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message || "Internal server error" });
+  }
+};
+//checkUser
+const checkUser = async (req, res) => {
+  try {
+    // Assuming admin is attached to req by middleware
+    if (!req.admin) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+    res.status(200).json({ success: true, message: "User is authenticated", data: req.admin });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message || "Internal server error" });
+  }
+};
 
-
-module.exports={ adminSignup, adminLogin, adminLogout, adminProfile, deleteUser,updateadmin, checkadmin }
+// controllers/adminController.js
+module.exports = {
+  adminSignup,
+  adminLogin,
+  adminLogout,
+  adminProfile,
+  updateAdmin,
+  deleteUser,
+  getUserList,
+  checkUser
+};

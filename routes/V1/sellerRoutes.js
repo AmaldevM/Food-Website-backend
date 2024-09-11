@@ -1,15 +1,23 @@
-const express = require('express')
-const { registerSeller, loginSeller, logoutSeller, getSellersList } = require('../../controllers/sellerController')
-const router = express.Router()
+const express = require('express');
+const {
+  registerSeller,
+  loginSeller,
+  logoutSeller,
+  getSellersList
+} = require('../../controllers/sellerController');
+
+const router = express.Router();
 
 // Register seller
-router.post('/register', registerSeller)
+router.post('/register', registerSeller);
+
 // Login seller
-router.post('/login', loginSeller)
-// logout seller
-router.post('/logout', logoutSeller)
-// get seller
-router.get('/allSellers', getSellersList)
+router.post('/login', loginSeller);
 
+// Logout seller (GET request instead of POST)
+router.get('/logout', logoutSeller);
 
-module.exports = {sellerRouter: router}
+// Get all sellers (Consider adding authentication middleware)
+router.get('/sellers', getSellersList);
+
+module.exports = { sellerRouter: router };

@@ -1,105 +1,102 @@
 const { Seller } = require("../models/sellerModel");
-const bcrypt = require("bcrypt");
-const { generateToken } = require("../utils/token");
-
-// Seller registration
+const bcrypt = require('bcrypt');
+const { generateToken } = require('../utils/token');
+// Seller Registration
 const registerSeller = async (req, res) => {
   try {
-    // Get seller data from request body
-    const { email, ...rest } = req.body;
-    // Check if required fields are present
-    if (!email || Object.keys(rest).length === 0) {
-      return res.status(404).json({ message: "All fields are required" });
+    const { email, password, ...rest } = req.body;
+    
+    if (!email || !password || Object.keys(rest).length === 0) {
+      return res.status(400).json({ message: "All fields are required" });
     }
-    // Check if any seller already exists
+    
+    // Check if seller already exists
     const isSellerExist = await Seller.findOne({ email });
     if (isSellerExist) {
-      return res.status(409).json({ message: "Seller already exist" });
+      return res.status(409).json({ message: "Seller already exists" });
     }
+    
     // Password hashing
     const saltRounds = 10;
-    const hashedPassword = bcrypt.hashSync(rest.password, saltRounds);
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // create seller
+    // Create seller
     const newSeller = new Seller({ email, ...rest, password: hashedPassword });
     await newSeller.save();
-    if (newSeller) {
-      return res.status(201).json("Seller created");
-    }
 
-    console.log(newSeller.id);
-
-    // generate token
+    // Generate token
     const token = generateToken({
-      _id: newSeller.id,
+      _id: newSeller._id,
       email: newSeller.email,
       role: "seller",
     });
-    console.log(token);
-    // pass the token as cookie
+
+    // Set cookie with token
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.ENVIRONMENT === "development" ? false : true,
+      secure: process.env.ENVIRONMENT === "production", // Set secure flag for production
     });
-    res.json({
-      success: true,
-      message: "Create new seller",
-    });
+    
+    res.status(201).json({ success: true, message: "Seller created", seller: newSeller });
   } catch (error) {
-    res.status(404).json({ error });
+    res.status(500).json({ error: error.message });
   }
 };
 
-// Login seller
+// Seller Login
 const loginSeller = async (req, res) => {
   try {
-    // Destructuring fields
     const { email, password } = req.body;
 
-    // Check if required fields
-    if ((!email, !password)) {
-        return res
-        .status(400)
-        .json({ success: false, message: "All fields are required" });
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "All fields are required" });
     }
-    // check the user signed or not
-    const isSellerExist = await Seller.findOne({email})
-    if (!isSellerExist) {
-        return res
-        .status(401)
-        .json({ success: false, message: "Seller does not exist" });
+
+    // Check if seller exists
+    const seller = await Seller.findOne({ email });
+    if (!seller) {
+      return res.status(401).json({ success: false, message: "Seller does not exist" });
     }
-    
-    // generate token
-    const token = generateToken(isSellerExist._id)
-    
+
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, seller.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ success: false, message: "Invalid credentials" });
+    }
+
+    // Generate token
+    const token = generateToken({ _id: seller._id, email: seller.email, role: "seller" });
+
+    // Set cookie with token
     res.cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.ENVIRONMENT === "development" ? false : true,
-        maxAge: 1 * 60 * 60 * 1000,
-    })
-    // Pass the token as cookie
-    res.status(201).json({ success: true, message: "Seller logged in" });
+      httpOnly: true,
+      secure: process.env.ENVIRONMENT === "production", // Set secure flag for production
+      maxAge: 1 * 60 * 60 * 1000, // 1 hour
+    });
+
+    res.status(200).json({ success: true, message: "Seller logged in" });
   } catch (error) {
-    res.status(404).json({ message: "faild to seller login" });
+    res.status(500).json({ message: "Failed to login seller" });
   }
 };
-// User logout
-const logoutSeller = async (req, res) => {
+
+// Seller Logout
+const logoutSeller = (req, res) => {
   try {
     res.clearCookie("token");
-    res.json({ success: true, message: "Seller logged out" });
+    res.status(200).json({ success: true, message: "Seller logged out" });
   } catch (error) {
-    res.json({ error });
+    res.status(500).json({ error: error.message });
   }
 };
-// get all sellers
+
+// Get All Sellers
 const getSellersList = async (req, res) => {
   try {
     const sellers = await Seller.find({});
-    return res.status(200).json(sellers);
+    res.status(200).json(sellers);
   } catch (error) {
-    res.status(404).json({ message: "Server not responese..." });
+    res.status(500).json({ message: "Failed to retrieve sellers list" });
   }
 };
 

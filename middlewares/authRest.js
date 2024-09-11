@@ -3,12 +3,15 @@ const { Restaurants } = require("../models/restModel")
 
 const authRest = async (req, res, next) => {
     try {
+       // Log cookies to check if token is present
+       console.log(req.cookies);
+
         // destructure token from cookies
         const { token } = req.cookies;
         if (!token) {
           return res
             .status(401)
-            .json({ succuss: false, message: "unauthoraized restaurant" });
+            .json({ success: false, message: "unauthoraized restaurant" });
         }
         // verify token using jwt verify
         const verifiedToken = jwt.verify(token, process.env.RESTAURANT_JWT_SECRET_KEY);

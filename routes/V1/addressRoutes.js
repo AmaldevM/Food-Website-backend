@@ -1,12 +1,13 @@
-const express = require('express')
-const { createAddress, updateAddress } = require('../../controllers/addressController')
-const { userAuth } = require('../../middlewares/userAuth')
+const express = require('express');
+const { createAddress, updateAddress } = require('../../controllers/addressController');
+const { userAuth } = require('../../middlewares/userAuth');
 
-const router = express.Router()
+const router = express.Router();
 
 // Create address
-router.post('/address', userAuth ,createAddress )
-// update address
-router.put('/address/:id',userAuth, updateAddress)
+router.post('/address', userAuth, createAddress);
 
-module.exports = { addressRouter: router }
+// Update address (no need for :id since you're fetching it from req.user)
+router.put('/address', userAuth, updateAddress);
+
+module.exports = { addressRouter: router };

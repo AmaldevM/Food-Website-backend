@@ -9,8 +9,8 @@ const sellerAuth = (req, res, next) => {
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: "user not autherized",
-      });
+        message: "User not authorized",
+      });      
     }
     // Verify the token
     const verifyToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
@@ -24,10 +24,11 @@ const sellerAuth = (req, res, next) => {
     req.seller = verifyToken;
     next()
   } catch (error) {
-    res.status(400).json({
-        success: false,
-        message: "faild",
-      });
+    res.status(error.status || 500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    });
+    
   }
 };
 module.exports = { sellerAuth }

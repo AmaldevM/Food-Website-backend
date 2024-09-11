@@ -3,7 +3,7 @@ const {
   getMenuItems,
   createMenuItem,
   getMenuItemById,
-  updateMenu,
+  updateMenuItem, // Renamed for consistency
   deleteMenuItem,
 } = require("../../controllers/menuController");
 const { upload } = require("../../middlewares/multer");
@@ -12,13 +12,17 @@ const router = express.Router();
 
 // Get all menu items for a restaurant
 router.get("/allmenus", getMenuItems);
-// Get menu by id
+
+// Get menu item by id
 router.get("/item/:id", getMenuItemById);
+
 // Create menu item
 router.post("/allmenus", sellerAuth, upload.single("image"), createMenuItem);
-// Update menus
-router.put("/item/:id", sellerAuth, updateMenu);
-// Update menus
+
+// Update menu item
+router.put("/item/:id", sellerAuth, updateMenuItem); // Renamed for consistency
+
+// Delete menu item
 router.delete("/item/:id", sellerAuth, deleteMenuItem);
 
 module.exports = { menuRouter: router };
