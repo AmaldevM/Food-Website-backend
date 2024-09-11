@@ -28,4 +28,4 @@ const adminAuth = async (req, res, next) => {
         .json({ message: error.message || "interal server error" });
       }
     };
-module.exports = { adminAuth };
+module.exports = { adminAuth }; 

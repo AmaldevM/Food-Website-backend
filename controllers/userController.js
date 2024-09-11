@@ -143,7 +143,7 @@ const getAllUsers = async (req, res, next) => {
     const data = allUsers.map((user) => {
       return {name:user.name,email:user.email,id:user._id,roles:user.roles}
     })
-    res.status(200).json({ success: true, message: "fetched all usets", data:data })
+    res.status(200).json({ success: true, message: "fetched all users", data:data })
     
   } catch (error){
     console.log(error);
@@ -182,4 +182,12 @@ const deleteUser = async (req, res, next) => {
 
 
 
-module.exports={ userSignup, userLogin, userLogout, userProfile, getAllUsers,deleteUser,updateUser, checkUser }
+module.exports={ 
+  userSignup, 
+  userLogin, 
+  userLogout, 
+  userProfile, 
+  getAllUsers,
+  deleteUser,
+  updateUser, 
+  checkUser }

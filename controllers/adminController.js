@@ -59,11 +59,11 @@ const adminLogin = async (req, res, next) => {
      res.status(error.statusCode || 500).json({message:error.messsage || "Internal login server Error"})
   }
 };
-//userLogout
+//adminLogout
 const adminLogout = async (req, res,next) => {
   try {
     res.clearCookie("Token")
-    res.status(200).json({success:true,message:"successfully logged out "})
+    res.status(200).json({success:true,message:"admin successfully logged out "})
 
   } catch (error){
     console.log(error);
@@ -85,7 +85,7 @@ const adminProfile = async (req, res, next) => {
     res.status(error.statusCode || 500).json({message:error.messsage || "Internal server Error"})
  }
 }
-//checkUser
+//checkadmin
 const checkadmin = async (req, res,next) => {
   try {
     const { user }=req;
