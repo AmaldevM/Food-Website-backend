@@ -4,7 +4,7 @@ const router = express.Router()
 
 // Create address
 router.post('/address',)
-// Ppdate address
+// update address
 router.put('/address/:id',)
 // Get address
 router.get('/address', )

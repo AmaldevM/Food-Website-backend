@@ -2,6 +2,8 @@ const { User } = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const { generateToken } = require("../utils/token")
 
+
+
 //UserSignup
 const userSignup = async (req,res,next) => {
      try {
@@ -13,11 +15,12 @@ const userSignup = async (req,res,next) => {
         }
         const isUserExist = await User.findOne({ email });
         if (isUserExist) {
-            return res.status(400).json({ message:  "user already exist" });
+            return res.status(400).json({success:false, message:  "user already exist" });
         }
+        //password hashing
             const saltRounds = 10;
             const hashedPassword = bcrypt.hashSync(password, saltRounds);
-      
+       //createnew 
             const newUser = new User({name, email, password:hashedPassword, phone, profilePic});
             await newUser.save();
 
@@ -175,6 +178,8 @@ const deleteUser = async (req, res, next) => {
     res.status(error.statusCode || 500).json({message:error.messsage || "Internal server Error"})
  }
 }
+//reset password
+
 
 
 module.exports={ userSignup, userLogin, userLogout, userProfile, getAllUsers,deleteUser,updateUser, checkUser }
