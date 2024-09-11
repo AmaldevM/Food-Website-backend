@@ -1,14 +1,19 @@
 const express = require('express')
+const {  createOrder, getOrderById, myOrders ,cancelOrder} = require('../../controllers/orderController')
+const { userAuth } = require('../../middlewares/userAuth')
+const { adminAuth } = require('../../middlewares/adminAuth')
+const { updateMenu } = require('../../controllers/menuController')
 
 const router = express.Router()
 
 // Create order
-router.post('/order')
+router.post('/order' ,userAuth , createOrder)
 // Get order
-router.get('/orders')
+router.get('/my-orders', userAuth, myOrders );
 // Get order by id
-router.get('/order/:id',)
+router.get('/:orderId', userAuth, getOrderById);
+// Cancel order
+router.patch('/cancel/:orderId', userAuth,cancelOrder );
 // Update order
-router.put('/order/:id/status')
-
+router.put('/order/:id/status',adminAuth,  updateMenu)
 module.exports = { orderRouter: router }
