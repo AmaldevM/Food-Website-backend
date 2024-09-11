@@ -5,7 +5,7 @@ const { userAuth } = require('../../middlewares/userAuth')
 const router = express.Router()
 
 // Create address
-router.post('/address', userAuth ,updateAddress )
+router.post('/address', userAuth ,createAddress )
 // update address
 router.put('/address/:id',userAuth, updateAddress)
 

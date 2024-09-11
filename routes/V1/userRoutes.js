@@ -21,7 +21,7 @@ router.put("/update/:userId",userAuth, updateUser)
 router.delete("/delete/:userId",userAuth,deleteUser)
 
 //user list
-router.get("/userlist", userAuth, )
+router.get("/userlist", userAuth, getAllUsers )
 //check user
 router.get("/checkUser", userAuth, checkUser )
 

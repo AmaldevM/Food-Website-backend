@@ -4,10 +4,10 @@ const { userAuth } = require('../../middlewares/userAuth')
 const router = express.Router()
 
 // Add item to cart
-router.post('/addCart',)
+router.post('/addCart',userAuth, addItemToCart)
 // Get cart
-router.get('/getCart')
+router.get('/getCart',userAuth, getCart)
 // Remove cart
-router.delete('/remove')
+router.delete('/remove', userAuth, removeFromCart)
 
-module.exports = { cartRouter: router }
+module.exports = { cartRouter : router }

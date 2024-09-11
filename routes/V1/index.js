@@ -10,7 +10,6 @@ const { cartRouter } = require("./cartRoutes");
 const { reviewRouter } = require("./reviewRoutes");
 const { addressRouter } = require("./addressRoutes");
 
-
 const v1Router = express.Router()
 
 v1Router.use("/user", userRouter)
