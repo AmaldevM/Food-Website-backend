@@ -1,6 +1,8 @@
 const { Seller } = require("../models/sellerModel");
 const bcrypt = require('bcrypt');
 const { generateToken } = require('../utils/token');
+const { Restaurant } = require("../models/restModel");
+
 // Seller Registration
 const registerSeller = async (req, res) => {
   try {

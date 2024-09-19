@@ -1,6 +1,7 @@
 // const express = require("express")
 // const { userSignup, userLogin, userLogout, userProfile, getAllUsers,deleteUser, updateUser, checkUser }=require("../../controllers/userController")
 // const { userAuth, adminAuth, userAndAdminAuth, specificUserAuth } = require("../../middlewares/userAuth")
+// const { userAuth, adminAuth, userAndAdminAuth, specificUserAuth } = require("../../middlewares/userAuth")
 
 const express = require("express");
 const { 

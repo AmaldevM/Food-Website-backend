@@ -2,6 +2,7 @@ const { Menu } = require("../models/menuModel");
 const { Order } = require("../models/orderModel");
 const { Restaurant } = require("../models/restModel");
 const { User } = require("../models/userModel");
+const { generateToken } = require("../utils/token");
 
 
 // create order

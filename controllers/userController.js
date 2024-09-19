@@ -1,7 +1,7 @@
 const { User } = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const { generateToken } = require("../utils/token")
-
+const { cloudinaryInstance } = require("../config/cloudinaryConfig");
 
 
 //UserSignup
