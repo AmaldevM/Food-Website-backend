@@ -12,4 +12,4 @@ v2.config({
 
 const cloudinaryInstance = v2
 
-module.exports={cloudinaryInstance}
+module.exports={ cloudinaryInstance }

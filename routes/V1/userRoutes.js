@@ -1,8 +1,3 @@
-// const express = require("express")
-// const { userSignup, userLogin, userLogout, userProfile, getAllUsers,deleteUser, updateUser, checkUser }=require("../../controllers/userController")
-// const { userAuth, adminAuth, userAndAdminAuth, specificUserAuth } = require("../../middlewares/userAuth")
-// const { userAuth, adminAuth, userAndAdminAuth, specificUserAuth } = require("../../middlewares/userAuth")
-
 const express = require("express");
 const { 
   userSignup, 
@@ -15,7 +10,7 @@ const {
   checkUser 
 } = require("../../controllers/userController");
 
-const { userAuth, } = require("../../middlewares/userAuth");
+const { userAuth } = require("../../middlewares/userAuth");
 
 const { upload } = require("../../middlewares/multer");
 
@@ -34,7 +29,7 @@ router.post("/logout", userLogout);
 router.get("/profile/:id", userAuth, userProfile);
 
 // User update
-router.put("/update/:id", userAuth, updateUser);
+router.put("/update/:id", userAuth, upload.single("image"), updateUser);
 
 // User delete
 router.delete("/delete/:id", userAuth, deleteUser);

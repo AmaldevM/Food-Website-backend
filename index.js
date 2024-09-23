@@ -12,6 +12,13 @@ app.use(express.json());
 // to get req.cookies
 app.use(cookieParser())
 
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+
 // mongodb connection
 connectDB();
 

@@ -2,7 +2,7 @@ const { cloudinaryInstance } = require("../config/cloudinary");
 const { Restaurant } = require("../models/restModel");
 
 // Restaurant list
-const getAllRestaurants = async (req, res) => {
+const getAllRestaurants = async (_req, res) => {
   try {
     const restaurants = await Restaurant.find({});
     return res.status(200).json(restaurants);
