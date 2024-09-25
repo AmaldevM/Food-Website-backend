@@ -38,7 +38,8 @@ const addItemToCart = async (req, res) => {
         // Add new item to cart
         cart.items.push({
           menuItem,
-          quantity,
+          quantity: 1 ,
+          price: items.price,
           image: menuItemDetails.image, // Include image here
         });
       }
@@ -71,7 +72,7 @@ const getCart = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const cart = await Cart.findOne({ user: userId });
+    const cart = await Cart.findOne({ user: userId }).populate("items.menuItem");
     if (!cart) {
       return res.status(404).json({ message: "Cart not found." });
     }
@@ -119,7 +120,9 @@ const removeFromCart = async (req, res) => {
 
     cart.totalPrice = totalPrice;
 
+    // Save updated cart
     await cart.save();
+
     res.status(200).json(cart);
   } catch (error) {
     console.error(error);

@@ -4,16 +4,27 @@ const { User } = require("../models/userModel");
 const userAuth = async (req, res, next) => {
   try {
     // Destructure token from cookies
-    const { token } = req.cookies;  // Ensure the key matches the cookie name
+    const { token } = req.cookies; 
     if (!token) {
-      return res.status(401).json({ success: false, message: "Unauthorized access" });
+      return res
+        .status(401)
+        .json({
+          success: false,
+          message: "Unauthorized access: No token provided",
+        });
     }
 
     // Verify token using jwt verify
     const decoded = jwt.verify(token, process.env.USER_JWT_SECRET_KEY);
-    
+
+    // Check if the token was successfully decoded
     if (!decoded) {
-      return res.status(401).json({ success: false, message: "Unauthorized access" });
+      return res
+        .status(401)
+        .json({
+          success: false,
+          message: "Unauthorized access: Invalid token",
+        });
     }
 
     // Fetch user from the database using the email from the token
@@ -21,16 +32,31 @@ const userAuth = async (req, res, next) => {
       .select("-password")
       .populate("address");
 
+    // Handle case where user is not found
     if (!user) {
-      return res.status(401).json({ success: false, message: "User not found" });
+      return res
+        .status(401)
+        .json({
+          success: false,
+          message: "Unauthorized access: User not found",
+        });
     }
 
     // Attach user to the request object
     req.user = user;
     next();
   } catch (error) {
+    // Differentiate between token expiration and other errors
+    if (error.name === "TokenExpiredError") {
+      return res
+        .status(401)
+        .json({
+          success: false,
+          message: "Unauthorized access: Token expired",
+        });
+    }
     console.error(error);
-    res.status(500).json({ success: false, message: error.message || "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 

@@ -1,29 +1,7 @@
 const { cloudinaryInstance } = require("../config/cloudinary");
 const { Restaurant } = require("../models/restModel");
 
-// Restaurant list
-const getAllRestaurants = async (_req, res) => {
-  try {
-    const restaurants = await Restaurant.find({});
-    return res.status(200).json(restaurants);
-  } catch (error) {
-    res.status(500).json({ message: "Server not responding", error });
-  }
-};
 
-// Get restaurant by ID
-const getRestaurantById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const restaurant = await Restaurant.findOne({ _id: id });
-    if (!restaurant) {
-      return res.status(404).json({ message: "Restaurant not found" });
-    }
-    res.status(200).json(restaurant);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching restaurant", error });
-  }
-};
 
 // Create restaurant
 const createRestaurant = async (req, res) => {
@@ -34,9 +12,10 @@ const createRestaurant = async (req, res) => {
     if (!name || Object.keys(rest).length === 0) {
       return res.status(400).json({ message: "All fields are required" });
     }
+    
     const existRestaurant = await Restaurant.findOne({ name });
     if (existRestaurant) {
-      return res.status(409).json({ message: "Restaurant already exists" });
+      return res.status(409).json({ success: false, message: "Restaurant already exists" });
     }
 
     let uploadResult = { secure_url: "" };
@@ -58,6 +37,31 @@ const createRestaurant = async (req, res) => {
     res.status(201).json(savedRestaurant);
   } catch (error) {
     res.status(500).json({ message: "Error creating restaurant", error });
+  }
+};
+
+
+// Restaurant list
+const getAllRestaurants = async (_req, res) => {
+  try {
+    const restaurants = await Restaurant.find({});
+    return res.status(200).json(restaurants);
+  } catch (error) {
+    res.status(500).json({ message: "Server not responding", error });
+  }
+};
+
+// Get restaurant by ID
+const getRestaurantById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const restaurant = await Restaurant.findOne({ _id: id });
+    if (!restaurant) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+    res.status(200).json(restaurant);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching restaurant", error });
   }
 };
 

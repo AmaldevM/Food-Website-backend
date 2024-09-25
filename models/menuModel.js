@@ -1,11 +1,17 @@
 const mongoose = require("mongoose");
 
-const menuSchema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true }, // unique constraint to prevent duplicate names
-  description: { type: String, required: true },
-  price: { type: Number, required: true },
-  image: { type: String, default: "" }, // default empty string if no image
-}, { timestamps: true }); // adds createdAt and updatedAt fields
+const menuSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true, unique: true },
+    description: { type: String, required: true },
+    price: { type: Number, required: true },
+    image: { type: String, default: "" },
+    category: { type: mongoose.Schema.Types.ObjectId,ref: "Category",},
+    availability: { type: Boolean, default: true },
+  },
+
+  { timestamps: true }
+); 
 
 const Menu = mongoose.model("Menu", menuSchema);
 

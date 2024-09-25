@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { Restaurants } = require("../models/restModel")
+
 
 const authRest = async (req, res, next) => {
     try {

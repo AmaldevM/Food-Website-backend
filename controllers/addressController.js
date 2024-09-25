@@ -4,34 +4,43 @@ const { User } = require("../models/userModel");
 // create address
 const createAddress = async (req, res) => {
   try {
-    const { firstname, lastname, city, street, mobile, pincode } = req.body;
-
+    const { name, email, city, street, phone, pincode } = req.body;
+    console.log(name, email);
     // validation
-    if (!firstname || !street || !city || !mobile || !pincode) {
-      return res.status(400).json({ success: false, message: "All fields required" });
+    if (!name || !email || !street || !city || !phone || !pincode) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields required" });
     }
 
     // Get user info from auth middleware
     const userInfo = req.user;
-    const user = await User.findOne({ email: userInfo.email }).populate("address");
+
+    // Find the user and check if they already have an address
+    const user = await User.findOne({ email: userInfo.email }).populate(
+      "address"
+    );
 
     if (!user) {
-      return res.status(401).json({ success: false, message: "Unauthorized user" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Unauthorized user" });
     }
 
     if (user.address) {
       return res.status(400).json({
         success: false,
-        message: "User already has an address. Please update the existing address.",
+        message:
+          "User already has an address. Please update the existing address.",
       });
     }
 
     const newAddress = new Address({
-      firstname,
-      lastname,
+      name,
+      email,
       city,
       street,
-      mobile,
+      phone,
       pincode,
     });
 
@@ -48,11 +57,10 @@ const createAddress = async (req, res) => {
     res.status(500).json({ success: false, message: error.message || "Internal server error" });
   }
 };
-
 // update address
 const updateAddress = async (req, res) => {
   try {
-    const { firstname, lastname, city, street, mobile, pincode } = req.body;
+    const { name, email, city, street, phone, pincode } = req.body;
     const userInfo = req.user;
     const user = await User.findOne({ email: userInfo.email }).populate("address");
 
@@ -66,10 +74,10 @@ const updateAddress = async (req, res) => {
 
     const address = await Address.findById(user.address._id);
 
-    if (firstname) address.firstname = firstname;
-    if (lastname) address.lastname = lastname;
+    if (name) address.name = name;
+    if (email) address.email = email;
     if (city) address.city = city;
-    if (mobile) address.mobile = mobile;
+    if (phone) address.phone = phone;
     if (pincode) address.pincode = pincode;
     if (street) address.street = street;
 

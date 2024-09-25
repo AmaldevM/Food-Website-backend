@@ -8,7 +8,6 @@ const adminAuth = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({ success: false, message: "Unauthorized admin, no token provided" });
     }
-
     // Verify token using jwt.verify
     let verifiedToken;
     try {
@@ -16,16 +15,13 @@ const adminAuth = async (req, res, next) => {
     } catch (error) {
       return res.status(401).json({ success: false, message: "Invalid or expired token" });
     }
-
     // Check if the admin exists in the database
     const admin = await Admin.findById(verifiedToken._id);
     if (!admin) {
       return res.status(404).json({ success: false, message: "Admin not found" });
     }
-
     // Assign admin data to the request object
     req.admin = admin;
-
     // Proceed to the next middleware
     next();
   } catch (error) {

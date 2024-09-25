@@ -12,8 +12,9 @@ const userSchema = new mongoose.Schema({
 });
 
 // Index on role field
-userSchema.index({ role: 1 });
 
 const User = mongoose.model("User", userSchema);
 
 module.exports = { User };
+
+
