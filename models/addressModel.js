@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
 
 const addressSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   firstname: { type: String, required: true },
   lastname: { type: String },
-  mobile: { type: String, required: true, match: /^[0-9]{10}$/ },
+  phone: { type: String, required: true, match: /^[0-9]{10}$/ },
   email: { type: String, required: true },
   street: { type: String, required: true },
   city: { type: String, required: true },

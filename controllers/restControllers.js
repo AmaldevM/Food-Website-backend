@@ -6,16 +6,20 @@ const { Restaurant } = require("../models/restModel");
 // Create restaurant
 const createRestaurant = async (req, res) => {
   try {
-    const admin = req.admin;
-    console.log(admin);
-    const { name, ...rest } = req.body;
-    if (!name || Object.keys(rest).length === 0) {
-      return res.status(400).json({ message: "All fields are required" });
+    const { name, description, address, phone, cuisineType } = req.body;
+
+    // Validation
+    if (!name || !description || !phone || !address || !cuisineType) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
     }
-    
+
     const existRestaurant = await Restaurant.findOne({ name });
     if (existRestaurant) {
-      return res.status(409).json({ success: false, message: "Restaurant already exists" });
+      return res
+        .status(409)
+        .json({ success: false, message: "Restaurant already exists" });
     }
 
     let uploadResult = { secure_url: "" };
@@ -29,13 +33,17 @@ const createRestaurant = async (req, res) => {
 
     const restaurant = new Restaurant({
       name,
-      ...rest,
+      description,
+      address,
+      phone,
+      cuisineType,
       image: uploadResult.secure_url,
     });
 
     const savedRestaurant = await restaurant.save();
-    res.status(201).json(savedRestaurant);
+    res.status(201).json({ success: true, restaurant: savedRestaurant });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Error creating restaurant", error });
   }
 };
