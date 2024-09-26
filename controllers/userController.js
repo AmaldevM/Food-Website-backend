@@ -7,7 +7,7 @@ const { cloudinaryInstance } = require("../config/cloudinary");
 //UserSignup
 const userSignup = async (req, res) => {
   try {
-    // destructure values from req.body
+    
     const { name, email, phone, password } = req.body;
     // validation
     if (!name || !email || !phone || !password) {
@@ -85,7 +85,6 @@ const userLogin = async (req, res) => {
         .status(400)
         .json({ success: false, message: "All fields required" });
     }
-
     // Check user availability
     const userExist = await User.findOne({ email });
     if (!userExist) {
@@ -153,7 +152,7 @@ const userLogout = async (req, res) => {
 //UserProfile
 const userProfile = async (req, res) => {
   try {
-    const user = req.user; // Already fetched by authUser middleware
+    const user = req.user; 
     console.log(user);
     if (!user) {
       return res.status(400).json({ message: "User not found" });
@@ -172,7 +171,7 @@ const userProfile = async (req, res) => {
 //checkUser
 const checkUser = async (req, res,next) => {
   try {
-    // get user data from auth middleware
+    
     const user = req.user;
     if (!user) {
       return res

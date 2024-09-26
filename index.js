@@ -5,7 +5,6 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const port = 3000;
 
-
 const app = express();
 app.use(express.json());
 
@@ -23,7 +22,6 @@ app.use(
 connectDB();
 
 app.use('/api', apiRouter);
-
 
 app.listen(port, () => {
     console.log(`server running port: ${port}`);

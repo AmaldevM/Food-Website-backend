@@ -43,7 +43,7 @@ const createOrder = async (req, res) => {
         for (const restaurantId in itemsByRestaurant) {
           const items = itemsByRestaurant[restaurantId];
     
-          if (items.length === 0) continue; // Skip empty item lists
+          if (items.length === 0) continue; 
     
           // Validate and calculate the total for the restaurant's order
           let restaurantTotal = 0;
@@ -68,12 +68,13 @@ const createOrder = async (req, res) => {
             };
           });
     
-          // Set the order total using the updated cart total divided by restaurants
+          
           const newOrder = new Order({
             user: user._id,
             restaurant: restaurantId,
             items: validatedItems,
-            total: updatedCartTotal / Object.keys(itemsByRestaurant).length, // Distribute the discount proportionally
+            total: updatedCartTotal / Object.keys(itemsByRestaurant).length, 
+            proportionally
           });
     
           await newOrder.save();
@@ -111,7 +112,7 @@ const createOrder = async (req, res) => {
         // find order
         const order = await Order.findById(orderId).populate({
           path: "restaurant",
-          select: "-password -orders -email", // Exclude fields like password, orders, and email
+          select: "-password -orders -email", 
         }).populate({
           path: "food",
         });;
@@ -171,9 +172,9 @@ const createOrder = async (req, res) => {
         // find orders by user ID
         const orders = await Order.find({ user: user._id }).populate({
           path: "restaurant",
-          select: "-password -orders -email", // Exclude fields like password, orders, and email
+          select: "-password -orders -email", 
         }).populate({
-          path: 'items.food', // Populate the food inside items
+          path: 'items.food', 
         });
         if (!orders || orders.length === 0) {
           return res

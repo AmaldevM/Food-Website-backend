@@ -3,7 +3,6 @@ const dotenv = require("dotenv");
 
 dotenv.config(); 
 
-
 const generateToken = (email, role) => {
   try {
     if (!email) {
@@ -11,7 +10,6 @@ const generateToken = (email, role) => {
         .status(400)
         .json({ message: "Cannot generate token: invalid email" });
     }
-
     const secretKey =
       role === "user"
         ? process.env.USER_JWT_SECRET_KEY
@@ -22,11 +20,10 @@ const generateToken = (email, role) => {
     if (!secretKey) {
       throw new Error("JWT secret key not found for the specified role");
     }
-
     const token = jwt.sign({ email, role }, secretKey, { expiresIn: "3h" });
     return token;
   } catch (error) {
-    throw new Error(error.message); // Propagate the error to be handled by the caller
+    throw new Error(error.message); 
   }
 };
 

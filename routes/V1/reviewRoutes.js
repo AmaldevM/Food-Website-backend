@@ -6,6 +6,7 @@ const router = express.Router()
 
 // Add review
 router.post('/reviews', userAuth , createReview)
+
 // Get reviews
 router.get('/reviews', getreviews)
 

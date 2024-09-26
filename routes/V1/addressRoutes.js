@@ -7,7 +7,7 @@ const router = express.Router();
 // Create address
 router.post('/address', userAuth, createAddress);
 
-// Update address (no need for :id since you're fetching it from req.user)
+// Update address 
 router.put('/address', userAuth, updateAddress);
 
 module.exports = { addressRouter: router };
