@@ -13,20 +13,16 @@ const restSchema = new mongoose.Schema({
     close: { type: String, },
   },
   isActive: { type: Boolean, default: true },
-  menu: [
-    {
-      name: String,
-      description: String,
-      price: Number,
-      imageUrl: String,
-    },
-  ],
-  images: {
+  image: {
     type: [String],
     default:
       "https://images.pexels.com/photos/260922/pexels-photo-260922.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
   },
   createdAt: { type: Date, default: Date.now },
+  seller:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"Seller"
+  }
 });
 
 

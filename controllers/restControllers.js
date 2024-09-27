@@ -6,6 +6,10 @@ const { Restaurant } = require("../models/restModel");
 // Create restaurant
 const createRestaurant = async (req, res) => {
   try {
+
+    console.log("create restaurant route hitted")
+    console.log(req.file," ==== image in controlroller")
+
     const { name, description, address, phone, cuisineType } = req.body;
 
     // Validation
@@ -16,32 +20,34 @@ const createRestaurant = async (req, res) => {
     }
 
     const existRestaurant = await Restaurant.findOne({ name });
+
     if (existRestaurant) {
       return res
         .status(409)
         .json({ success: false, message: "Restaurant already exists" });
     }
 
-    let uploadResult = { secure_url: "" };
-    if (req.file) {
-      console.log("Uploading file to Cloudinary...");
-      uploadResult = await cloudinaryInstance.uploader.upload(req.file.path);
-      console.log("Upload result:", uploadResult);
-    } else {
-      console.log("No file to upload.");
-    }
 
-    const restaurant = new Restaurant({
-      name,
-      description,
-      address,
-      phone,
-      cuisineType,
-      image: uploadResult.secure_url,
-    });
 
-    const savedRestaurant = await restaurant.save();
-    res.status(201).json({ success: true, restaurant: savedRestaurant });
+
+    // let uploadResult = { secure_url: "" };
+    // if (req.file) {
+    //   console.log("Uploading file to Cloudinary...");
+    //   uploadResult = await cloudinaryInstance.uploader.upload(req.file.path);
+    //   console.log("Upload result:", uploadResult);
+    // } else {
+    //   console.log("No file to upload.");
+    // }
+
+    // const restaurant = new Restaurant({ name, description, address,phone,cuisineType, });
+
+    // const savedRestaurant = await restaurant.save();
+    //  restaurant: savedRestaurant,
+   res
+     .status(201)
+     .json({ success: true, message: "restaurant created successfully" });
+
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error creating restaurant", error });
